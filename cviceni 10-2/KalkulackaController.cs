@@ -78,10 +78,8 @@ namespace Kalkulacka
                 CE();
             else if (ciselneZnaky.Contains(klavesa))
             {
-                if (registrB.Hodnota is null
-                    && registrOperatoru.Hodnota is null
-                    && registrV.Hodnota is null)
-                    registrA.Vymaz();
+                if (registrV.Hodnota is not null)
+                    C();
                 vstup.PridejZnak(klavesa[0]);
             }
             else if (AritmetickaJednotka.Operatory.Contains(klavesa))
@@ -104,13 +102,15 @@ namespace Kalkulacka
                             else
                             {
                                 registrB.VlozHodnotu(vstup.VratCisloAVymaz() ?? 0);
-                                ProvedVypocet();
+                                aritmetickaJednotka.Vypocitej();
+                                PresunVDoAVymazBAOp();
                                 registrOperatoru.VlozHodnotu(klavesa);
                             }
                         }
                         else
                         {
-                            ProvedVypocet();
+                            aritmetickaJednotka.Vypocitej();
+                            PresunVDoAVymazBAOp();
                             registrOperatoru.VlozHodnotu(klavesa);
                         }
                     }
@@ -125,16 +125,16 @@ namespace Kalkulacka
                         registrB.VlozHodnotu(vstup.VratCisloAVymaz() ?? 0);
                     else
                         registrB.VlozHodnotu(registrA.Hodnota);
-                    ProvedVypocet();
+                    aritmetickaJednotka.Vypocitej();
                 }
             }
             VyvolejZmenu(nameof(HlavniDisplej));
             VyvolejZmenu(nameof(DisplejVypoctu));
         }
 
-        private void ProvedVypocet()
+        private void PresunVDoAVymazBAOp()
         {
-            aritmetickaJednotka.Vypocitej();
+            //aritmetickaJednotka.Vypocitej();
             registrA.VlozHodnotu(registrV.VratHodnotuAVymaz());
             registrB.Vymaz();
             registrOperatoru.Vymaz();
