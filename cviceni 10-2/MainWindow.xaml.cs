@@ -9,7 +9,7 @@ namespace Kalkulacka
     /// </summary>
     public partial class MainWindow : Window
     {
-        KalkulackaController controller = new();
+        readonly KalkulackaController controller = new();
         public MainWindow()
         {
             InitializeComponent();

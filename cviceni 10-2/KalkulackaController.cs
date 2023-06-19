@@ -6,24 +6,64 @@ namespace Kalkulacka
 
     /// <summary>
     /// Představuje hlavní logiku (controller) kalkulačky.
+    /// Kalkulačka počítá s float čísly.
     /// </summary>
     public class KalkulackaController : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        private VstupniBuffer vstup;
-        private RegistrFloat registrA;
-        private RegistrFloat registrB;
-        private RegistrFloat registrV;
-        private RegistrOperatoru registrOperatoru;
-        private AritmetickaJednotka aritmetickaJednotka;
+        /// <summary>
+        /// Buffer přijímající vstup z číselných kláves.
+        /// </summary>
+        private readonly VstupniBuffer vstup;
+        /// <summary>
+        /// Registr pro první operand.
+        /// </summary>
+        private readonly RegistrFloat registrA;
+        /// <summary>
+        /// Registr pro druhý operand.
+        /// </summary>
+        private readonly RegistrFloat registrB;
+        /// <summary>
+        /// Registr pro výsledek výpočtu.
+        /// </summary>
+        private readonly RegistrFloat registrV;
+        /// <summary>
+        /// Registr pro zadaný operátor.
+        /// </summary>
+        private readonly RegistrOperatoru registrOperatoru;
+        /// <summary>
+        /// Aritmetická jednotka kalkulačky.
+        /// </summary>
+        private readonly AritmetickaJednotka aritmetickaJednotka;
+        /// <summary>
+        /// Hlavní displej zobrazující právě zadávané číslo a pak výsledek.
+        /// </summary>
         public HlavniDisplej HlavniDisplej { get; private set; }
+        /// <summary>
+        /// Displej zobrazující zadané operandy a operátor.
+        /// </summary>
         public DisplejVypoctu DisplejVypoctu { get; private set; }
+        /// <summary>
+        /// Kultura (pro parsování a výstup desetinného oddělovače).
+        /// </summary>
         public static readonly string Culture = "cs";
         private static readonly CultureInfo cultureInfo = CultureInfo.GetCultureInfo(Culture);
         private static readonly string numberDecimalSeparator = cultureInfo.NumberFormat.NumberDecimalSeparator;
+        /// <summary>
+        /// Číselné klávesy - znaky (včetně desetinné čárky).
+        /// </summary>
         private static readonly string ciselneZnaky = $"0123456789{numberDecimalSeparator}";
+        /// <summary>
+        /// Klávesa - znak "rovno" k provedení výpočtu.
+        /// </summary>
         private static readonly string znakRovnaSe = "=";
+        /// <summary>
+        /// Klávesa - znak "C" pro vymazání vstupního buffferu, všech registrů a obou displejů.
+        /// </summary>
         private static readonly string klavesaC = "C";
+        /// <summary>
+        /// Klávesa - znak "CE" pro vymazání vstupního bufferu (a hlavního displeje).
+        /// </summary>
         private static readonly string klavesaCE = "CE";
 
         public KalkulackaController()
@@ -41,15 +81,9 @@ namespace Kalkulacka
                 DisplejVypoctu.Prekresli();
             };
             registrOperatoru = new();
-            registrOperatoru.Zmenen += () =>
-            {
-                DisplejVypoctu.Prekresli();
-            };
+            registrOperatoru.Zmenen += () => DisplejVypoctu.Prekresli();
             registrB = new(Culture);
-            registrB.Zmenen += () =>
-            {
-                DisplejVypoctu.Prekresli();
-            };
+            registrB.Zmenen += () => DisplejVypoctu.Prekresli();
             registrV = new(Culture);
             registrV.Zmenen += () =>
             {
@@ -58,15 +92,15 @@ namespace Kalkulacka
             };
             aritmetickaJednotka = new(registrA, registrB, registrV, registrOperatoru);
             HlavniDisplej = new();
-            DisplejVypoctu = new(/*"vstup: ", vstup, "| A: ", registrA, "| op: ", registrOperatoru, "| B: ", registrB, "| V: ", registrV, "\t",*/
-                registrA, registrOperatoru, registrB);
+            DisplejVypoctu = new(registrA, registrOperatoru, registrB);
         }
 
-        private void VyvolejZmenu(string vlastnost)
-        {
-            if (PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(vlastnost));
-        }
+        private void VyvolejZmenu(string vlastnost) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(vlastnost));
+        
+        /// <summary>
+        /// Metoda implementující logiku zpracování právě stisknuté klávesy. 
+        /// </summary>
+        /// <param name="klavesa">Řetězec reprezentující stisknutou klávesu ("0"-"9", ",", "=", "+", "-", "*", "/", "C", "CE").</param>
         public void ZpracujKlavesu(string? klavesa)
         {
             if (klavesa is null || klavesa == string.Empty)
@@ -134,7 +168,6 @@ namespace Kalkulacka
 
         private void PresunVDoAVymazBAOp()
         {
-            //aritmetickaJednotka.Vypocitej();
             registrA.VlozHodnotu(registrV.VratHodnotuAVymaz());
             registrB.Vymaz();
             registrOperatoru.Vymaz();

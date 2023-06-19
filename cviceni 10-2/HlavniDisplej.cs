@@ -1,5 +1,8 @@
 ﻿namespace Kalkulacka
 {
+    /// <summary>
+    /// Hlavní displej kalkulačky.
+    /// </summary>
     public class HlavniDisplej : Displej
     {
         public HlavniDisplej() : base()
